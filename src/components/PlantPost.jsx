@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../AuthContext.jsx';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { collection, addDoc } from "firebase/firestore"; 
 import { db } from '../firebase.jsx';
 
 function PlantPost() {
@@ -8,6 +9,7 @@ function PlantPost() {
   const [location, setLocation] = useState('');
   const [carbonSaved, setCarbonSaved] = useState(0);
   const [loading, setLoading] = useState(false);
+  const { currentUser } = useAuth(); // Get the current user from the AuthContext
 
   const storage = getStorage();
 
@@ -31,18 +33,25 @@ function PlantPost() {
           setLoading(false);
         }, 
         async () => {
-          // Get the download URL of the uploaded image
-          const downloadURL = await getDownloadURL(storageRef);
+          try {
+            // Get the download URL of the uploaded image
+            const downloadURL = await getDownloadURL(storageRef);
 
-          // Store post data in Firestore using the db reference
-          await db.collection('posts').add({
-            location,
-            carbonSaved,
-            imageUrl: downloadURL,
-            // Add other fields if needed
-          });
+            // Store post data in Firestore
+            const docRef = await addDoc(collection(db, 'posts'), {
+              location,
+              carbonSaved,
+              imageUrl: downloadURL,
+              userId: currentUser.uid, // Store the user's UID with the post
+              // Add other fields if needed
+            });
 
-          setLoading(false);
+            console.log("Document written with ID: ", docRef.id);
+          } catch (error) {
+            console.error("Error saving to Firestore: ", error);
+          } finally {
+            setLoading(false);
+          }
         }
       );
     }
