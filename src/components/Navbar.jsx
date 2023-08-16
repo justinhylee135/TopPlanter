@@ -19,7 +19,7 @@ function Navbar() {
           <Link to="/profile">Profile</Link>
         </li>
         <li>
-          <Link to="/groups">Groups</Link>
+          <Link to="/social">Social</Link>
         </li>
       </ul>
     </nav>

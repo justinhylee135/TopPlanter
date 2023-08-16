@@ -7,7 +7,7 @@ import Navbar from "./components/Navbar";
 import PlantPost from "./components/PlantPost";
 import Leaderboard from "./components/Leaderboard";
 import UserProfile from "./components/UserProfile";
-import Group from "./components/Group";
+import Social from "./components/Social";
 import './App.css';
 
 //Plant weight formula: pi * (w/2)^2 * h * 500
@@ -55,10 +55,10 @@ function App() {
             }
           />
           <Route
-            path="/groups"
+            path="/social"
             element={
               <PrivateRoute>
-                <Group />
+                <Social />
               </PrivateRoute>
             }
           />
