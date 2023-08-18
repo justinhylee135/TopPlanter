@@ -1,7 +1,10 @@
 import express from "express";
 import axios from "axios";
 import cors from "cors";
-import 'dotenv/config';
+import "dotenv/config";
+
+// Import Babel Register
+import "@babel/register";
 
 const TREFLE_API_KEY = process.env.TREFLE_API_KEY;
 console.log("Trefle API Key:", TREFLE_API_KEY);
@@ -10,6 +13,17 @@ const app = express();
 const PORT = 3000;
 
 app.use(cors()); // Enable CORS for all routes
+
+// Middleware to rewrite .jsx requests to .js
+app.use((req, res, next) => {
+  if (req.path.endsWith(".jsx")) {
+    req.url = req.url.replace(".jsx", ".js");
+  }
+  next();
+});
+
+// Serve the transpiled .jsx files from the 'src' directory
+app.use(express.static("src"));
 
 app.get("/plants/search", async (req, res) => {
   try {
