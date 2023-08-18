@@ -17,6 +17,7 @@ function PlantPost() {
   const [loading, setLoading] = useState(false);
   const [plantName, setPlantName] = useState("");
   const [identifiedPlantName, setIdentifiedPlantName] = useState(null);
+  const [postSuccess, setPostSuccess] = useState(false);
   const { currentUser } = useAuth();
   const storage = getStorage();
   const API_KEY = "Ev73HGdUwTzNoOGreVac0lhSfEj876JB0NqEEZqjDtqwPQinvI";
@@ -28,8 +29,8 @@ function PlantPost() {
       // Create a FormData object
       const formData = new FormData();
       formData.append("images", image);
-      formData.append("latitude", "49.207");
-      formData.append("longitude", "16.608");
+      // formData.append("latitude", "49.207");
+      // formData.append("longitude", "16.608");
       formData.append("similar_images", "true");
 
       try {
@@ -52,11 +53,12 @@ function PlantPost() {
         const name = response.data.result.classification.suggestions[0].name;
         setIdentifiedPlantName(name);
         console.log("Extracted Plant Name:", name);
-
       } catch (error) {
         console.error("Error identifying plant: ", error);
         console.log("Error Response:", error.response && error.response.data);
-        setIdentifiedPlantName("No plant has been identified or an error has occured");
+        setIdentifiedPlantName(
+          "No plant has been identified or an error has occured"
+        );
       } finally {
         setLoading(false);
       }
@@ -66,31 +68,36 @@ function PlantPost() {
   const handleSubmit = async () => {
     if (image) {
       setLoading(true);
+      setPostSuccess(false);
+      console.log("Starting the upload...");
 
       // Upload the image to Firebase Storage
-      const storageRef = ref(storage, 'uploads/' + image.name);
+      const storageRef = ref(storage, "uploads/" + image.name);
       const uploadTask = uploadBytesResumable(storageRef, image);
 
       // Get the download URL of the image and save the data to Firestore
-      uploadTask.on('state_changed', 
+      uploadTask.on(
+        "state_changed",
         () => {},
         (error) => {
           console.error("Error uploading image: ", error);
-        }, 
+        },
         async () => {
           const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-          await addDoc(collection(db, 'posts'), {
+          await addDoc(collection(db, "posts"), {
             userId: currentUser.uid,
-            plantName: plantName || "Not Identified", // Use the user-entered plant name
+            plantName: plantName || "Not Identified",
             imageUrl: downloadURL,
-            location: location,
+            location: location || "No Location Provided",
             carbonSaved: carbonSaved,
             timestamp: new Date(),
           });
+
+          setPostSuccess(true);
+          setLoading(false);
+          console.log("Upload successful, postSuccess should be true now.");
         }
       );
-
-      setLoading(false);
     }
   };
 
@@ -115,16 +122,14 @@ function PlantPost() {
       <button onClick={identifyWithAI} disabled={loading}>
         Identify With AI
       </button>
-      <button onClick={handleSubmit} disabled={loading}>
-        Post
+      <button onClick={handleSubmit} disabled={loading || postSuccess}>
+        {postSuccess ? "Successfully Posted" : "Post"}
       </button>
       <p>Estimated Carbon Saved: {carbonSaved}kg CO2 annually</p>
       {identifiedPlantName && (
         <>
           <p>AI Identified Plant: {identifiedPlantName}</p>
-          <button onClick={copyPlantNameToInput}>
-            Copy Name to Input
-          </button>
+          <button onClick={copyPlantNameToInput}>Copy Name to Input</button>
         </>
       )}
     </div>
