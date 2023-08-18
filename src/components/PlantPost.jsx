@@ -13,14 +13,48 @@ import axios from "axios";
 function PlantPost() {
   const [image, setImage] = useState(null);
   const [location, setLocation] = useState("");
-  const [carbonSaved, setCarbonSaved] = useState(0);
   const [loading, setLoading] = useState(false);
   const [plantName, setPlantName] = useState("");
+  const [carbonSaved, setCarbonSaved] = useState(0);
   const [identifiedPlantName, setIdentifiedPlantName] = useState(null);
   const [postSuccess, setPostSuccess] = useState(false);
   const { currentUser } = useAuth();
   const storage = getStorage();
-  const API_KEY = "Ev73HGdUwTzNoOGreVac0lhSfEj876JB0NqEEZqjDtqwPQinvI";
+  const PlantId_API_KEY = "Ev73HGdUwTzNoOGreVac0lhSfEj876JB0NqEEZqjDtqwPQinvI";
+  const k = 0.5; // constant for carbon absorption calculation
+
+  const calculateCarbon = async (plantName) => {
+    let calculatedCarbonSaved = 0;
+
+    if (plantName) {
+      try {
+        // First, search for the plant closest to the given plantName
+        const searchResponse = await axios.get(
+          `http://localhost:3000/plants/search`,
+          {
+            params: { q: plantName },
+          }
+        );
+
+        console.log("Search API Response:", searchResponse.data);
+        console.log("ID: ", searchResponse.data.data[0]);
+
+        if (!searchResponse.data || !searchResponse.data.data[0]) {
+          calculatedCarbonSaved = 10;
+          console.error("No plant data received from API");
+          return calculatedCarbonSaved;
+        }
+        else {
+          calculatedCarbonSaved = 22;
+        }
+
+      } catch (error) {
+        console.error("Error fetching plant data:", error);
+      }
+    }
+
+    return calculatedCarbonSaved;
+  };
 
   const identifyWithAI = async () => {
     if (image) {
@@ -29,8 +63,6 @@ function PlantPost() {
       // Create a FormData object
       const formData = new FormData();
       formData.append("images", image);
-      // formData.append("latitude", "49.207");
-      // formData.append("longitude", "16.608");
       formData.append("similar_images", "true");
 
       try {
@@ -41,7 +73,7 @@ function PlantPost() {
           {
             headers: {
               "Content-Type": "multipart/form-data",
-              "Api-Key": API_KEY,
+              "Api-Key": PlantId_API_KEY,
             },
           }
         );
@@ -75,6 +107,11 @@ function PlantPost() {
       const storageRef = ref(storage, "uploads/" + image.name);
       const uploadTask = uploadBytesResumable(storageRef, image);
 
+      // Call the calculateCarbon function when the user posts a photo
+      const calculatedCarbonSaved = await calculateCarbon(plantName || identifiedPlantName);
+
+      setCarbonSaved(calculatedCarbonSaved);
+
       // Get the download URL of the image and save the data to Firestore
       uploadTask.on(
         "state_changed",
@@ -89,7 +126,7 @@ function PlantPost() {
             plantName: plantName || "Not Identified",
             imageUrl: downloadURL,
             location: location || "No Location Provided",
-            carbonSaved: carbonSaved,
+            carbonSaved: calculatedCarbonSaved,
             timestamp: new Date(),
           });
 
@@ -105,9 +142,14 @@ function PlantPost() {
     setPlantName(identifiedPlantName);
   };
 
+  const handleImageChange = (e) => {
+    setImage(e.target.files[0]);
+    setPostSuccess(false); // Reset the postSuccess state when a new image is selected
+  };
+
   return (
     <div>
-      <input type="file" onChange={(e) => setImage(e.target.files[0])} />
+      <input type="file" onChange={handleImageChange} />
       <input
         type="text"
         placeholder="Location"
@@ -123,7 +165,7 @@ function PlantPost() {
         Identify With AI
       </button>
       <button onClick={handleSubmit} disabled={loading || postSuccess}>
-        {postSuccess ? "Successfully Posted" : "Post"}
+        {postSuccess ? "Successfully Posted" : "Post and Calculate CO2"}
       </button>
       <p>Estimated Carbon Saved: {carbonSaved}kg CO2 annually</p>
       {identifiedPlantName && (

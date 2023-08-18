@@ -29,10 +29,21 @@ function UserProfile() {
 
       const plantList = plantSnapshot.docs
         .filter((doc) => doc.data().userId === currentUser.uid)
-        .map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+        .map((doc) => {
+          const plantData = {
+            id: doc.id,
+            ...doc.data(),
+          };
+
+          // Calculate the number of days the plant has been alive
+          const currentDate = new Date();
+          const timestamp = new Date(plantData.timestamp.toDate());
+          const timeDifference = currentDate - timestamp;
+          const dayDifference = timeDifference / (1000 * 3600 * 24);
+          plantData.daysAlive = Math.floor(dayDifference) + 1;
+
+          return plantData;
+        });
 
       console.log("Fetched Plants:", plantList); // Log the fetched plants
 
@@ -81,9 +92,23 @@ function UserProfile() {
         {userPlants.map((plant) => (
           <li key={plant.id}>
             <img src={plant.imageUrl} alt="Plant" width="100" />
-            <p>Location: {plant.location}</p>
             <p>Plant Name: {plant.plantName} </p>
-            <p>Carbon Saved: {plant.carbonSaved}kg CO2 annually</p>
+            <p>Location: {plant.location}</p>
+            <p>
+              Date Planted:{" "}
+              {plant.timestamp
+                ? new Date(plant.timestamp.toDate()).toLocaleDateString()
+                : "N/A"}
+            </p>
+            <p>Days Alive: {plant.daysAlive}</p>
+            <p>Annual Absorption Rate: {plant.carbonSaved} kg CO2 </p>
+            <p>
+              CO2 Absorbed: {" "}
+              {plant.daysAlive && plant.daysAlive > 0
+                ? ((plant.carbonSaved / 365) * plant.daysAlive).toFixed(2)
+                : "N/A"}{" "}
+              kg
+            </p>
             <button onClick={() => handleDelete(plant.id)}>Delete</button>
           </li>
         ))}
