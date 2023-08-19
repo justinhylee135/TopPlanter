@@ -1,22 +1,25 @@
 // netlify/functions/search-plant.js
-const axios = require('axios');
+const axios = require("axios");
 
-exports.handler = async function(event, context) {
-  if (event.httpMethod !== 'GET') {
-    return { statusCode: 405, body: 'Method Not Allowed' };
+exports.handler = async function (event, context) {
+  if (event.httpMethod !== "GET") {
+    return { statusCode: 405, body: "Method Not Allowed" };
   }
 
   const plantName = event.queryStringParameters.q;
 
   if (!plantName) {
-    return { statusCode: 400, body: 'Plant name is required' };
+    return { statusCode: 400, body: "Plant name is required" };
   }
 
   try {
     const searchResponse = await axios.get(
-      `http://localhost:3000/plants/search`,
+      `https://trefle.io/api/v1/plants/search`,
       {
-        params: { q: plantName },
+        params: {
+          token: TREFLE_TOKEN,
+          q: q,
+        },
       }
     );
 
@@ -36,7 +39,7 @@ exports.handler = async function(event, context) {
     console.error("Error fetching plant data:", error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Failed to fetch plant data' }),
+      body: JSON.stringify({ error: "Failed to fetch plant data" }),
     };
   }
 };
