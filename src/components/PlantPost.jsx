@@ -23,10 +23,8 @@ function PlantPost() {
   const PlantId_API_KEY = "Ev73HGdUwTzNoOGreVac0lhSfEj876JB0NqEEZqjDtqwPQinvI";
   const k = 0.5; // constant for carbon absorption calculation
 
-
-  // const TREFLE_TOKEN = "GDxikdaFSC_oTZZv6_TN84XM73TPsDnGRHrgJbljgho";
   const TREFLE_TOKEN = process.env.TREFLE_API_KEY;
-  
+
   const calculateCarbon = async (plantName) => {
     let calculatedCarbonSaved = 0;
 

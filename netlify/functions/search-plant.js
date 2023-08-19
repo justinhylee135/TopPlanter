@@ -1,6 +1,6 @@
 // netlify/functions/search-plant.js
 const axios = require("axios");
-const TREFLE_TOKEN = process.env.TREFLE_API_KEY;
+// const TREFLE_TOKEN = process.env.TREFLE_API_KEY;
 
 // Access the TREFLE_TOKEN environment variable
 console.log("TREFLE_TOKEN from env:", process.env.TREFLE_API_KEY);
