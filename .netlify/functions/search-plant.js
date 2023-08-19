@@ -13,7 +13,7 @@ exports.handler = async function (event, context) {
   }
 
   // Access the TREFLE_TOKEN environment variable
-  console.log("TREFLE_TOKEN:", process.env.TREFLE_TOKEN);
+  console.log("TREFLE_TOKEN:", process.env.TREFLE_API_KEY);
   const TREFLE_TOKEN = process.env.TREFLE_API_KEY;
 
   try {
