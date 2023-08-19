@@ -22,7 +22,7 @@ function PlantPost() {
   const storage = getStorage();
   const k = 0.5; // constant for carbon absorption calculation
   
-  const PlantId_API_KEY = process.env.PlantId_API_KEY;
+  const PlantId_API_KEY = "Ev73HGdUwTzNoOGreVac0lhSfEj876JB0NqEEZqjDtqwPQinvI";
   const TREFLE_TOKEN = process.env.TREFLE_API_KEY;
 
   const calculateCarbon = async (plantName) => {
