@@ -313,7 +313,17 @@ function Group() {
         ...doc.data(),
         id: doc.id,
       }));
-      setGroups(groupData);
+
+      // Filter the groups to only include those that the current user is a member of
+      const groupMembersCollection = collection(db, "groupMembers");
+      const groupMembersSnapshot = await getDocs(
+        query(groupMembersCollection, where("userId", "==", currentUser.uid))
+      );
+      
+      const userGroupIds = groupMembersSnapshot.docs.map((doc) => doc.data().groupId);
+      const filteredGroups = groupData.filter((group) => userGroupIds.includes(group.id));
+      
+      setGroups(filteredGroups);
     };
 
     fetchGroups();
