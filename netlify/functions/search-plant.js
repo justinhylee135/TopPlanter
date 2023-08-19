@@ -12,13 +12,16 @@ exports.handler = async function (event, context) {
     return { statusCode: 400, body: "Plant name is required" };
   }
 
+  // Access the TREFLE_TOKEN environment variable
+  const TREFLE_TOKEN = process.env.TREFLE_TOKEN;
+
   try {
     const searchResponse = await axios.get(
       `https://trefle.io/api/v1/plants/search`,
       {
         params: {
-          token: TREFLE_TOKEN,
-          q: q,
+          token: TREFLE_TOKEN, // Use the environment variable here
+          q: plantName, // Corrected from 'q' to 'plantName'
         },
       }
     );
