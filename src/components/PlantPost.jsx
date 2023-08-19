@@ -32,8 +32,8 @@ function PlantPost() {
     if (plantName) {
       try {
         // Access the TREFLE_TOKEN environment variable
-        console.log("TREFLE_TOKEN:", process.env.TREFLE_API_KEY);
-        
+        console.log("TREFLE_TOKEN from env:", process.env.TREFLE_API_KEY);
+
         // First, search for the plant closest to the given plantName
         const searchResponse = await axios.get(
           "/.netlify/functions/search-plant", // Updated URL
