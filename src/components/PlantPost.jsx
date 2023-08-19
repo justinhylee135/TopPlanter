@@ -25,34 +25,29 @@ function PlantPost() {
 
   const calculateCarbon = async (plantName) => {
     let calculatedCarbonSaved = 0;
-
+  
     if (plantName) {
       try {
         // First, search for the plant closest to the given plantName
         const searchResponse = await axios.get(
-          `http://localhost:3000/plants/search`,
+          "/.netlify/functions/search-plant", // Updated URL
           {
-            params: { q: plantName },
+            params: {
+              token: TREFLE_TOKEN,
+              q: plantName, // Update this line
+            },
           }
         );
-
+  
         console.log("Search API Response:", searchResponse.data);
-        console.log("ID: ", searchResponse.data.data[0]);
-
-        if (!searchResponse.data || !searchResponse.data.data[0]) {
-          calculatedCarbonSaved = 10;
-          console.error("No plant data received from API");
-          return calculatedCarbonSaved;
-        }
-        else {
-          calculatedCarbonSaved = 22;
-        }
-
+  
+        calculatedCarbonSaved = searchResponse.data.carbonSaved;
+  
       } catch (error) {
         console.error("Error fetching plant data:", error);
       }
     }
-
+  
     return calculatedCarbonSaved;
   };
 
