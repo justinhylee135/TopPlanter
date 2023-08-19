@@ -18,12 +18,11 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [isSignUp, setIsSignUp] = useState(false); // New state to toggle between Sign In and Sign Up
 
   const handleGoogleSignIn = async () => {
     const user = await signInWithGoogle();
     if (user) {
-      console.log("Successfully signed in as:", user.displayName);
+      console.log("Successfully signed in as:", user.name);
       setCurrentUser(user);
 
       // Check if user exists in Firestore
@@ -34,7 +33,7 @@ function Login() {
         // If user doesn't exist, create a new user document
         await setDoc(userRef, {
           uid: user.uid,
-          name: user.displayName,
+          name: user.name || user.email || "",
           email: user.email,
           profileImage: user.photoURL,
           plants: 0, // Initial value
@@ -61,6 +60,7 @@ function Login() {
         password
       );
       const user = userCredential.user;
+      console.log('User: ', user);
       setCurrentUser(user);
       navigate("/"); // Navigate to the home page
     } catch (err) {
@@ -84,9 +84,9 @@ function Login() {
       // Create a new user document in Firestore
       const userRef = doc(db, "users", user.uid);
       await setDoc(userRef, {
-        uid: user.uid,
-        name: user.displayName || "",
-        email: user.email,
+        uid: user.uid || "",
+        name: user.name || user.email || "",
+        email: user.email || "",
         profileImage: user.photoURL || "",
         plants: 0, // Initial value
       });
@@ -98,7 +98,7 @@ function Login() {
   };
 
   if (currentUser) {
-    return <p>You are already signed in as {currentUser.displayName}.</p>;
+    return <p>You are already signed in as {currentUser.name}.</p>;
   }
 
   return (
