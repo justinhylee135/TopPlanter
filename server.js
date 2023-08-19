@@ -12,7 +12,22 @@ console.log("Trefle API Key:", TREFLE_API_KEY);
 const app = express();
 const PORT = 3000;
 
-app.use(cors()); // Enable CORS for all routes
+// Define a whitelist of allowed origins
+const whitelist = ["https://top-planter.netlify.app", "http://localhost:3000", "http://localhost:5173"];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    console.log("Origin:", origin); // Add this line
+    if (whitelist.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+};
+
+// Enable CORS for routes using the whitelist
+app.use(cors(corsOptions));
 
 // Middleware to rewrite .jsx requests to .js
 app.use((req, res, next) => {
