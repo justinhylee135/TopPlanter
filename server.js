@@ -27,7 +27,9 @@ const corsOptions = {
 };
 
 // Enable CORS for routes using the whitelist
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
+app.use(cors());
+
 
 // Middleware to rewrite .jsx requests to .js
 app.use((req, res, next) => {
