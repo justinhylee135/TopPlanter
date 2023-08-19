@@ -13,7 +13,7 @@ const app = express();
 const PORT = 3000;
 
 // Define a whitelist of allowed origins
-const whitelist = ["https://top-planter.netlify.app", "http://localhost:3000", "http://localhost:5173"];
+const whitelist = ["https://master--top-planter.netlify.app/login", "https://top-planter.netlify.app", "http://localhost:3000", "http://localhost:5173"];
 
 const corsOptions = {
   origin: function (origin, callback) {
