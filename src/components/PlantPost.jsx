@@ -20,9 +20,9 @@ function PlantPost() {
   const [postSuccess, setPostSuccess] = useState(false);
   const { currentUser } = useAuth();
   const storage = getStorage();
-  const PlantId_API_KEY = "Ev73HGdUwTzNoOGreVac0lhSfEj876JB0NqEEZqjDtqwPQinvI";
   const k = 0.5; // constant for carbon absorption calculation
-
+  
+  const PlantId_API_KEY = process.env.PlantId_API_KEY;
   const TREFLE_TOKEN = process.env.TREFLE_API_KEY;
 
   const calculateCarbon = async (plantName) => {
