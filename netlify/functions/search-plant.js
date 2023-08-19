@@ -1,5 +1,6 @@
 // netlify/functions/search-plant.js
 const axios = require("axios");
+const TREFLE_TOKEN = "GDxikdaFSC_oTZZv6_TN84XM73TPsDnGRHrgJbljgho";
 
 exports.handler = async function (event, context) {
   if (event.httpMethod !== "GET") {
