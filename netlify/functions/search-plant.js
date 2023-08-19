@@ -13,7 +13,7 @@ exports.handler = async function (event, context) {
   }
 
   // Access the TREFLE_TOKEN environment variable
-  const TREFLE_TOKEN = process.env.TREFLE_TOKEN;
+  const TREFLE_TOKEN = process.env.TREFLE_API_KEY;
 
   try {
     const searchResponse = await axios.get(
