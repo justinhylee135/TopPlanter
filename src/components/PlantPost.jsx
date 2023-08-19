@@ -23,11 +23,17 @@ function PlantPost() {
   const PlantId_API_KEY = "Ev73HGdUwTzNoOGreVac0lhSfEj876JB0NqEEZqjDtqwPQinvI";
   const k = 0.5; // constant for carbon absorption calculation
 
+  // const TREFLE_TOKEN = process.env.TREFLE_API_KEY;
+  const TREFLE_TOKEN = "GDxikdaFSC_oTZZv6_TN84XM73TPsDnGRHrgJbljgho";
+
   const calculateCarbon = async (plantName) => {
     let calculatedCarbonSaved = 0;
-  
+
     if (plantName) {
       try {
+        // Access the TREFLE_TOKEN environment variable
+        console.log("TREFLE_TOKEN:", process.env.TREFLE_API_KEY);
+        
         // First, search for the plant closest to the given plantName
         const searchResponse = await axios.get(
           "/.netlify/functions/search-plant", // Updated URL
@@ -38,16 +44,15 @@ function PlantPost() {
             },
           }
         );
-  
+
         console.log("Search API Response:", searchResponse.data);
-  
+
         calculatedCarbonSaved = searchResponse.data.carbonSaved;
-  
       } catch (error) {
         console.error("Error fetching plant data:", error);
       }
     }
-  
+
     return calculatedCarbonSaved;
   };
 
@@ -103,7 +108,9 @@ function PlantPost() {
       const uploadTask = uploadBytesResumable(storageRef, image);
 
       // Call the calculateCarbon function when the user posts a photo
-      const calculatedCarbonSaved = await calculateCarbon(plantName || identifiedPlantName);
+      const calculatedCarbonSaved = await calculateCarbon(
+        plantName || identifiedPlantName
+      );
 
       setCarbonSaved(calculatedCarbonSaved);
 
