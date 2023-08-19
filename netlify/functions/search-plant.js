@@ -2,6 +2,9 @@
 const axios = require("axios");
 const TREFLE_TOKEN = process.env.TREFLE_API_KEY;
 
+// Access the TREFLE_TOKEN environment variable
+console.log("TREFLE_TOKEN from env:", process.env.TREFLE_API_KEY);
+
 exports.handler = async function (event, context) {
   if (event.httpMethod !== "GET") {
     return { statusCode: 405, body: "Method Not Allowed" };
@@ -12,7 +15,6 @@ exports.handler = async function (event, context) {
   if (!plantName) {
     return { statusCode: 400, body: "Plant name is required" };
   }
-
 
   try {
     const searchResponse = await axios.get(
